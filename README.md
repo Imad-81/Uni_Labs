@@ -2,6 +2,29 @@
 
 > A collection of university laboratory experiments, demonstrating core concepts in Data Structures and Algorithms (DSA) and Object-Oriented Programming (OOPs).
 
+**Update:** The repository now includes a new stack-based postfix evaluator (Exp 3) and polished Python scripts with clearer input prompts. Refer to the individual experiment READMEs for detailed changelogs.
+
+## 🚀 Getting Started
+
+To work with this code locally, follow the steps below:
+
+```bash
+# clone the repository
+git clone https://github.com/Imad-81/Uni_Labs.git
+cd Uni_Labs
+
+# (optional) create and activate a Python virtual environment
+python -m venv .venv
+# on Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+# install any dependencies if required
+# pip install -r requirements.txt
+```
+
+Python 3.x and a Java JDK (for the `OOPsLab` experiments) are required. The `dsalab` scripts can be executed directly, and the notebooks can be opened in Jupyter.
+
+---
+
 ---
 
 ## 🗂️ Directory Structure
@@ -21,7 +44,13 @@ Uni_Labs/
 │
 └── OOPsLab/                       # Object-Oriented Programming Laboratory
     ├── exp1.java                  # Java Basics: JVM entry points and main methods
-    └── README_exp1.md             # Docs & execution flow for Java Exp 1
+    ├── ExpressionsDemo.java       # Java arithmetic & boolean expression examples
+    ├── CheckEqualFour.java        # Simple equality check exercise
+    ├── CheckDoubleRange.java      # Range validation with double values
+    ├── README_exp1.md             # Docs & execution flow for Java Exp 1
+    ├── README_ExpressionsDemo.md  # Documentation for expression demo
+    ├── README_CheckEqualFour.md   # Docs for equality check exercise
+    └── README_CheckDoubleRange.md # Docs for double range validation
 ```
 
 ---
@@ -35,8 +64,10 @@ This module focuses on building foundational data structures from first principl
 * **Stacks**: In `exp3`, wrapping an array into a strict LIFO container and applying it to solve algorithmic challenges (postfix RPN evaluation).
 
 ### 2. Object-Oriented Programming (`OOPsLab`)
-This module focuses on the principles of OOP using **Java**.
+This module focuses on the principles of OOP using **Java** and basic program constructs.
 * **Class Architecture**: In `exp1`, understanding JVM expectations, class blueprints, and the `public static void main` runtime entry point.
+* **Expression Evaluation**: `ExpressionsDemo` shows arithmetic and boolean logic with printed results.
+* **Conditional Logic**: `CheckEqualFour` and `CheckDoubleRange` demonstrate simple `if` statements and comparison operators with user input.
 
 ---
 
