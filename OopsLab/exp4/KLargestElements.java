@@ -1,10 +1,3 @@
-package OopsLab.exp4;
-
-/**
- * Write a Java program to find the k largest elements in a given array. 
- * Elements in the array can be in any order.
- */
-
 import java.util.Scanner;
 
 import java.util.Arrays;
@@ -13,9 +6,9 @@ public class KLargestElements {
 
     public static void main(String[] args) {
 
-        try (Scanner sc = new Scanner(System.in)) {
+        Scanner sc = new Scanner(System.in);
 
-            System.out.print("Enter array size: ");
+        System.out.print("Enter array size: ");
 
         int n = sc.nextInt();
 
