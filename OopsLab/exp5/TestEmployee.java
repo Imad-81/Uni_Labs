@@ -1,51 +1,51 @@
 // Parent class
-
 class Employee {
+    String name;
+    double salary;
+
+    // Constructor
+    Employee(String name, double salary) {
+        this.name = name;
+        this.salary = salary;
+    }
 
     void work() {
-
-        System.out.println("Employee is working");
-
+        System.out.println(name + " is working");
     }
 
     double getSalary() {
-
-        return 30000;
-
+        return salary;
     }
-
 }
 
+// Child class
 class HRManager extends Employee {
 
+    // Constructor
+    HRManager(String name, double salary) {
+        super(name, salary);
+    }
+
     @Override
-
     void work() {
-
-        System.out.println("HR Manager manages employees");
-
+        System.out.println(name + " manages employees");
     }
 
     void addEmployee() {
-
-        System.out.println("Adding new employee");
-
+        System.out.println(name + " is adding a new employee");
     }
-
 }
 
+// Main class
 public class TestEmployee {
-
     public static void main(String[] args) {
+        Employee emp = new HRManager("Ravi", 50000); // polymorphism
 
-        HRManager hr = new HRManager();
+        emp.work();
+        System.out.println("Salary: " + emp.getSalary());
 
-        hr.work();
-
-        System.out.println("Salary: " + hr.getSalary());
-
+        // Downcasting to access child-specific method
+        HRManager hr = (HRManager) emp;
         hr.addEmployee();
-
     }
-
 }
