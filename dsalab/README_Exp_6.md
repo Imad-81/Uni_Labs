@@ -9,4 +9,6 @@
 4. Repeatedly divide the search interval in half to find the target element ($O(\log n)$).
 5. Compare search results and performance.
 
-**Output:** Search results (Found/Not Found) and their indices are printed for both algorithms.
+**Output:**
+Linear Search: Product3 found at index 2
+Binary Search: Product3 found at index 2

@@ -9,4 +9,6 @@
 4. If it's an operator, pop two operands, apply the operation, and push the result back.
 5. After scanning, the last remaining element in the stack is the final result.
 
-**Output:** User-entered postfix expressions return computed results (e.g., `23*5+` returns `11`).
+**Output:**
+Enter the expression: 23*5+
+Result of the expression 23*5+ is 11

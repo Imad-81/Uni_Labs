@@ -9,4 +9,9 @@
 4. `heappush` adds a ticket to the heap while preserving the heap property.
 5. `heappop` removes and returns the highest priority ticket from the top.
 
-**Output:** Urgent tickets are processed before normal ones, and equal priority tickets are handled in order of arrival.
+**Output:**
+--- Current Pending Tickets ---
+[ID: 1] Priority: Urgent | Customer: Imad | Issue: Urgent issue
+[ID: 2] Priority: Normal | Customer: Bob | Issue: Normal issue
+Processing Ticket: [ID: 1] Priority: Urgent | Customer: Imad | Issue: Urgent issue
+Status: Resolved.

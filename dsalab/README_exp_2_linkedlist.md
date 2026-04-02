@@ -8,4 +8,9 @@
 3. For `calculate_gpa()`, traverse the linked list to compute the total marks and total count.
 4. Return the average marks or an alphabetic grade (A-F) based on the computed average.
 
-**Output:** Student data is printed sequentially, followed by the overall average and the assigned GPA grade.
+**Output:**
+List of Students:
+Name: Charlie, Roll Number: A003, Marks: 78
+Name: Bob, Roll Number: A002, Marks: 92
+Name: Alice, Roll Number: A001, Marks: 85
+Calculated GPA: B
