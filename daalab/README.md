@@ -12,6 +12,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 - [Experiment 3: Fibonacci Heap Implementation](#experiment-3-fibonacci-heap-implementation)
 - [Experiment 4: Red-Black Tree Implementation](#experiment-4-red-black-tree-implementation)
 - [Experiment 5: Greedy Algorithms](#experiment-5-greedy-algorithms)
+- [Experiment 6: Task Scheduling Problem (Greedy Approach)](#experiment-6-task-scheduling-problem-greedy-approach)
 - [Comprehensive Time & Space Complexity Matrix](#comprehensive-time--space-complexity-matrix)
 - [Viva Questions & Answers](#viva-questions--answers)
 
@@ -26,6 +27,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 | [`exp3.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp3.py) | **Fibonacci Heap** | `insert`, `find_min`, `extract_min`, `consolidate`, `decrease_key`, `cut` | $O(1)$ amortized insert & decrease-key |
 | [`exp4.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp4.py) | **Red-Black Tree** | `insert`, `fix_insert`, `left_rotate`, `right_rotate`, `search`, `inorder` | $O(\log n)$ search / insert |
 | [`exp5.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp5.py) | **Greedy Algorithms** | Fractional Knapsack, Activity Selection, Huffman Coding | $O(n \log n)$ sorting / heap building |
+| [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py) | **Task Scheduling (Greedy Approach)** | Interactive task input, finish-time sorting, greedy non-overlapping selection (`task_scheduling`) | $O(n \log n)$ sorting / $O(n)$ selection |
 
 ---
 
@@ -197,6 +199,68 @@ Maximum Activities = 4
 
 ---
 
+## Experiment 6: Task Scheduling Problem (Greedy Approach)
+
+**Source File:** [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py)
+
+### Overview
+The **Task Scheduling Problem** (also referred to as **Interval Scheduling**) involves scheduling the maximum number of compatible tasks on a single execution resource (e.g., a single CPU or a shared resource). Each task $i$ has an index, a start time $s_i$, and a finish time $f_i$ ($s_i < f_i$). Two tasks $i$ and $j$ are mutually compatible if their execution intervals do not overlap ($s_j \ge f_i$ or $s_i \ge f_j$).
+
+### Algorithmic Workflow & Mechanics
+
+1. **User Input Gathering**:
+   - Reads the total count of tasks $n$.
+   - Iteratively prompts the user for each task's start time and finish time.
+   - Stores each task as a tuple: `(task_number, start_time, finish_time)`.
+2. **Earliest Finish Time (EFT) Sorting**:
+   - Sorts the tasks in ascending order of their completion/finish times:
+     ```python
+     tasks.sort(key=lambda x: x[2])
+     ```
+   - **Greedy Choice Invariant:** Choosing the task that finishes first leaves the largest feasible window of free time to accommodate subsequent tasks.
+3. **Greedy Schedule Decision (`task_scheduling`)**:
+   - Maintains a pointer `previous_finish` initialized to `0`.
+   - Traverses each task in sorted order:
+     - **Condition met (`start_time >= previous_finish`)**: The task is scheduled, printed with its start and finish time, and `previous_finish` is updated to `finish_time`.
+     - **Overlap detected (`start_time < previous_finish`)**: The task is rejected, reporting that it conflicts with the previously scheduled task.
+
+### Step-by-Step Execution Trace
+
+```text
+Interactive Input:
+Task 1: Start = 1, Finish = 3
+Task 2: Start = 2, Finish = 5
+Task 3: Start = 4, Finish = 7
+Task 4: Start = 1, Finish = 8
+Task 5: Start = 5, Finish = 9
+Task 6: Start = 8, Finish = 10
+
+Sorted by Finish Time (x[2]):
+[Task 1 (1, 3), Task 2 (2, 5), Task 3 (4, 7), Task 4 (1, 8), Task 5 (5, 9), Task 6 (8, 10)]
+
+Decision Flow:
+• Task 1: start (1) >= prev (0)  -> SCHEDULED.    New prev = 3.
+• Task 2: start (2) <  prev (3)  -> NOT SCHEDULED (overlaps with Task 1).
+• Task 3: start (4) >= prev (3)  -> SCHEDULED.    New prev = 7.
+• Task 4: start (1) <  prev (7)  -> NOT SCHEDULED (overlaps with Task 3).
+• Task 5: start (5) <  prev (7)  -> NOT SCHEDULED (overlaps with Task 3).
+• Task 6: start (8) >= prev (7)  -> SCHEDULED.    New prev = 10.
+
+Total Scheduled Tasks: 3 (Task 1, Task 3, Task 6)
+```
+
+### Complexity Analysis
+
+- **Time Complexity**:
+  - **Input Collection**: $O(n)$ for reading $n$ tasks.
+  - **Sorting**: $O(n \log n)$ via Python's Timsort on task finish times.
+  - **Greedy Linear Selection**: $O(n)$ single-pass iteration comparing start time with previous finish time.
+  - **Overall Time Complexity**: $O(n \log n)$
+- **Space Complexity**:
+  - **Auxiliary Space**: $O(n)$ to hold the list of $n$ task tuples in memory.
+
+---
+
 ## Comprehensive Time & Space Complexity Matrix
 
 | Structure / Algorithm | Search / Find Min | Insert (Worst Case) | Insert (Amortized) | Extract Min / Delete | Overall Time Complexity | Space Complexity |
@@ -208,6 +272,7 @@ Maximum Activities = 4
 | **Fractional Knapsack** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 | **Activity Selection** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 | **Huffman Coding** | N/A | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | $O(n \log n)$ | $O(n)$ |
+| **Task Scheduling (Greedy)** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 
 ---
 
@@ -234,6 +299,13 @@ Inserting a RED node preserves Rule 5 (Black-Height invariant) across all paths.
 ### Q7: What is the purpose of the `mark` field in Fibonacci Heap nodes?
 The `mark` boolean indicates whether a node has lost a child since it became a child of its current parent. It triggers a **cascading cut** when a second child is lost, preventing trees from becoming excessively deep and preserving $O(1)$ amortized efficiency.
 
+### Q8: Why does the Earliest Finish Time (EFT) greedy strategy guarantee an optimal solution for task/interval scheduling?
+By mathematical induction ("Greedy Stays Ahead" proof): Let the greedy schedule select activities $i_1, i_2, \dots, i_k$ and an optimal schedule select $j_1, j_2, \dots, j_m$. By definition of the greedy choice, $f(i_1) \le f(j_1)$. Substituting $i_1$ for $j_1$ keeps all remaining activities in the optimal schedule compatible. Repeating this establishes that the greedy schedule finishes each step at or before the optimal schedule, proving $k = m$ (optimality).
+
+### Q9: What is the difference between Interval Scheduling (`exp6.py`) and Interval Partitioning (Minimum Machine Scheduling)?
+- **Interval Scheduling** aims to find the **maximum number of mutually compatible tasks** on a single machine/resource ($O(n \log n)$ by sorting finish times).
+- **Interval Partitioning** aims to schedule **all given tasks** using the **minimum number of machines/processors** such that no two overlapping tasks run on the same machine (solved greedily by sorting start times and managing active machines with a min-heap in $O(n \log n)$ time).
+
 ---
 
-*Prepared for DAA Laboratory — Unit Experiments 1–5*
+*Prepared for DAA Laboratory — Unit Experiments 1–6*
