@@ -42,3 +42,87 @@ tasks.sort(key=lambda x: x[2])
 
 # Call the function
 task_scheduling(tasks)
+
+# Display the vertices.
+print("Vertices: A, B, C, D")
+
+# Ask the student to enter the number of edges.
+number_of_edges = int(input("Enter number of edges: "))
+
+# Ask the student to enter the starting vertex.
+source = input("Enter starting vertex: ").upper()
+
+# Ask the student to enter the ending vertex.
+destination = input("Enter ending vertex: ").upper()
+
+# Display the possible paths from A to D.
+print("\nTwo possible paths are:")
+
+# Display the first possible path.
+print("Path 1:", source, "- B -", destination)
+
+# Display the second possible path.
+print("Path 2:", source, "- C -", destination)
+
+# Ask the student to enter the weight of the first edge of Path 1.
+weight_ab = int(input("\nEnter the weight of " + source + "-B: "))
+
+# Ask the student to enter the weight of the second edge of Path 1.
+weight_bd = int(input("Enter the weight of B-" + destination + ": "))
+
+# Calculate the total weight of Path 1.
+path1_distance = weight_ab + weight_bd
+
+# Ask the student to enter the weight of the first edge of Path 2.
+weight_ac = int(input("\nEnter the weight of " + source + "-C: "))
+
+# Ask the student to enter the weight of the second edge of Path 2.
+weight_cd = int(input("Enter the weight of C-" + destination + ": "))
+
+# Calculate the total weight of Path 2.
+path2_distance = weight_ac + weight_cd
+
+# Compare the two path distances.
+if path1_distance < path2_distance:
+
+    # Store Path 1 as the shortest path.
+    shortest_path = source + " -> B -> " + destination
+
+    # Store the distance of Path 1.
+    shortest_distance = path1_distance
+
+# Check if Path 2 is shorter.
+elif path2_distance < path1_distance:
+
+    # Store Path 2 as the shortest path.
+    shortest_path = source + " -> C -> " + destination
+
+    # Store the distance of Path 2.
+    shortest_distance = path2_distance
+
+# If both paths have the same distance.
+else:
+
+    # Store both paths as shortest paths.
+    shortest_path = source + " -> B -> " + destination + " and " + source + " -> C -> " + destination
+
+    # Store the common shortest distance.
+    shortest_distance = path1_distance
+
+# Display the Bellman-Ford heading.
+print("\nBELLMAN-FORD ALGORITHM")
+
+# Display a separator line.
+print("----------------------")
+
+# Display the starting vertex.
+print("Starting Vertex  :", source)
+
+# Display the ending vertex.
+print("Ending Vertex    :", destination)
+
+# Display the shortest path.
+print("Shortest Path    :", shortest_path)
+
+# Display the shortest distance.
+print("Shortest Distance:", shortest_distance)
