@@ -12,7 +12,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 - [Experiment 3: Fibonacci Heap Implementation](#experiment-3-fibonacci-heap-implementation)
 - [Experiment 4: Red-Black Tree Implementation](#experiment-4-red-black-tree-implementation)
 - [Experiment 5: Greedy Algorithms](#experiment-5-greedy-algorithms)
-- [Experiment 6: Task Scheduling Problem (Greedy Approach)](#experiment-6-task-scheduling-problem-greedy-approach)
+- [Experiment 6: Task Scheduling & Bellman-Ford Algorithm](#experiment-6-task-scheduling--bellman-ford-algorithm)
 - [Comprehensive Time & Space Complexity Matrix](#comprehensive-time--space-complexity-matrix)
 - [Viva Questions & Answers](#viva-questions--answers)
 
@@ -27,7 +27,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 | [`exp3.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp3.py) | **Fibonacci Heap** | `insert`, `find_min`, `extract_min`, `consolidate`, `decrease_key`, `cut` | $O(1)$ amortized insert & decrease-key |
 | [`exp4.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp4.py) | **Red-Black Tree** | `insert`, `fix_insert`, `left_rotate`, `right_rotate`, `search`, `inorder` | $O(\log n)$ search / insert |
 | [`exp5.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp5.py) | **Greedy Algorithms** | Fractional Knapsack, Activity Selection, Huffman Coding | $O(n \log n)$ sorting / heap building |
-| [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py) | **Task Scheduling (Greedy Approach)** | Interactive task input, finish-time sorting, greedy non-overlapping selection (`task_scheduling`) | $O(n \log n)$ sorting / $O(n)$ selection |
+| [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py) | **Task Scheduling & Bellman-Ford** | 6(a) Greedy task scheduling (`task_scheduling`), 6(b) Shortest path relaxation & comparison (`run_bellman_ford`) | $O(n \log n)$ scheduling / $O(1)$ path relaxation demo |
 
 ---
 
@@ -199,14 +199,23 @@ Maximum Activities = 4
 
 ---
 
-## Experiment 6: Task Scheduling Problem (Greedy Approach)
+## Experiment 6: Task Scheduling & Bellman-Ford Algorithm
 
 **Source File:** [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py)
 
-### Overview
+The script provides an interactive CLI runner (`main()`) to execute either experiment individually or both sequentially:
+1. `6(a)` — Task Scheduling Problem (Greedy Approach)
+2. `6(b)` — Bellman-Ford Algorithm (Shortest Path Demonstration)
+3. Run Both Experiments
+
+---
+
+### 6(a) Task Scheduling Problem (Greedy Approach)
+
+#### Overview
 The **Task Scheduling Problem** (also referred to as **Interval Scheduling**) involves scheduling the maximum number of compatible tasks on a single execution resource (e.g., a single CPU or a shared resource). Each task $i$ has an index, a start time $s_i$, and a finish time $f_i$ ($s_i < f_i$). Two tasks $i$ and $j$ are mutually compatible if their execution intervals do not overlap ($s_j \ge f_i$ or $s_i \ge f_j$).
 
-### Algorithmic Workflow & Mechanics
+#### Algorithmic Workflow & Mechanics
 
 1. **User Input Gathering**:
    - Reads the total count of tasks $n$.
@@ -224,7 +233,7 @@ The **Task Scheduling Problem** (also referred to as **Interval Scheduling**) in
      - **Condition met (`start_time >= previous_finish`)**: The task is scheduled, printed with its start and finish time, and `previous_finish` is updated to `finish_time`.
      - **Overlap detected (`start_time < previous_finish`)**: The task is rejected, reporting that it conflicts with the previously scheduled task.
 
-### Step-by-Step Execution Trace
+#### Step-by-Step Execution Trace
 
 ```text
 Interactive Input:
@@ -249,7 +258,7 @@ Decision Flow:
 Total Scheduled Tasks: 3 (Task 1, Task 3, Task 6)
 ```
 
-### Complexity Analysis
+#### Complexity Analysis
 
 - **Time Complexity**:
   - **Input Collection**: $O(n)$ for reading $n$ tasks.
@@ -258,6 +267,42 @@ Total Scheduled Tasks: 3 (Task 1, Task 3, Task 6)
   - **Overall Time Complexity**: $O(n \log n)$
 - **Space Complexity**:
   - **Auxiliary Space**: $O(n)$ to hold the list of $n$ task tuples in memory.
+
+---
+
+### 6(b) Bellman-Ford Algorithm (Shortest Path Demonstration)
+
+#### Overview
+The **Bellman-Ford Algorithm** solves the Single-Source Shortest Path (SSSP) problem on directed/undirected weighted graphs, correctly handling graphs with negative edge weights and detecting negative weight cycles. 
+
+In this lab module (`run_bellman_ford`), a canonical multi-path network between vertices $A, B, C, D$ is evaluated:
+- **Path 1**: $\text{Source} \to B \to \text{Destination}$ with cumulative weight $w(\text{Source}, B) + w(B, \text{Destination})$
+- **Path 2**: $\text{Source} \to C \to \text{Destination}$ with cumulative weight $w(\text{Source}, C) + w(C, \text{Destination})$
+
+The program relaxes the two paths, compares their total accumulated distances, and outputs the optimal shortest path and its corresponding distance.
+
+#### Step-by-Step Execution Trace
+
+```text
+Vertices: A, B, C, D
+Source: A, Destination: D
+
+Path 1: A -> B -> D (Weight AB = 4, Weight BD = 2) => Distance = 6
+Path 2: A -> C -> D (Weight AC = 1, Weight CD = 8) => Distance = 9
+
+Comparison: Distance(Path 1) < Distance(Path 2) => 6 < 9
+Shortest Path: A -> B -> D
+Shortest Distance: 6
+```
+
+#### Complexity Analysis
+
+- **General Bellman-Ford Algorithm**:
+  - **Time Complexity**: $O(V \cdot E)$ where $V$ is the number of vertices and $E$ is the number of edges ($|V|-1$ relaxation passes over all $E$ edges).
+  - **Space Complexity**: $O(V)$ for the distance array and predecessor pointers.
+- **Lab 6(b) Demo Implementation**:
+  - **Time Complexity**: $O(1)$ constant time evaluation of the two candidate routes.
+  - **Space Complexity**: $O(1)$ constant auxiliary space.
 
 ---
 
@@ -272,7 +317,8 @@ Total Scheduled Tasks: 3 (Task 1, Task 3, Task 6)
 | **Fractional Knapsack** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 | **Activity Selection** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 | **Huffman Coding** | N/A | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | $O(n \log n)$ | $O(n)$ |
-| **Task Scheduling (Greedy)** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
+| **Task Scheduling (Greedy 6a)** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
+| **Bellman-Ford (SSSP 6b Demo)** | N/A | N/A | N/A | N/A | $O(1)$ demo / $O(V \cdot E)$ gen | $O(1)$ demo / $O(V)$ gen |
 
 ---
 
@@ -305,6 +351,9 @@ By mathematical induction ("Greedy Stays Ahead" proof): Let the greedy schedule 
 ### Q9: What is the difference between Interval Scheduling (`exp6.py`) and Interval Partitioning (Minimum Machine Scheduling)?
 - **Interval Scheduling** aims to find the **maximum number of mutually compatible tasks** on a single machine/resource ($O(n \log n)$ by sorting finish times).
 - **Interval Partitioning** aims to schedule **all given tasks** using the **minimum number of machines/processors** such that no two overlapping tasks run on the same machine (solved greedily by sorting start times and managing active machines with a min-heap in $O(n \log n)$ time).
+
+### Q10: How does Bellman-Ford handle negative weight edges and detect negative cycles?
+Unlike Dijkstra's algorithm (which fails on negative edges due to greedy finality), Bellman-Ford relaxes all $|E|$ edges $|V|-1$ times. If a further relaxation in the $|V|$-th pass still yields a shorter distance (`dist[u] + weight < dist[v]`), it proves the graph contains a negative-weight cycle reachable from the source.
 
 ---
 
