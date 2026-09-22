@@ -14,6 +14,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 - [Experiment 5: Greedy Algorithms](#experiment-5-greedy-algorithms)
 - [Experiment 6: Task Scheduling & Bellman-Ford Algorithm](#experiment-6-task-scheduling--bellman-ford-algorithm)
 - [Experiment 7: Minimum Spanning Tree (MST) Algorithms](#experiment-7-minimum-spanning-tree-mst-algorithms)
+- [Experiment 8: Dynamic Programming (MCM & LCS)](#experiment-8-dynamic-programming-mcm--lcs)
 - [Comprehensive Time & Space Complexity Matrix](#comprehensive-time--space-complexity-matrix)
 - [Viva Questions & Answers](#viva-questions--answers)
 
@@ -30,6 +31,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 | [`exp5.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp5.py) | **Greedy Algorithms** | Fractional Knapsack, Activity Selection, Huffman Coding | $O(n \log n)$ sorting / heap building |
 | [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py) | **Task Scheduling & Bellman-Ford** | 6(a) Greedy task scheduling (`task_scheduling`), 6(b) Shortest path relaxation & comparison (`run_bellman_ford`) | $O(n \log n)$ scheduling / $O(1)$ path relaxation demo |
 | [`exp7.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp7.py) | **Minimum Spanning Tree (MST)** | 7(a) Prim's Algorithm (`prims_algorithm`), 7(b) Kruskal's Algorithm (`kruskals_algorithm`) | $O(V \cdot E)$ lab / $O(E \log E)$ |
+| [`exp8.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp8.py) | **Dynamic Programming (DP)** | 8(a) Matrix Chain Multiplication (`matrix_chain_multiplication`), 8(b) Longest Common Subsequence (`longest_common_subsequence`) | $O(n^3)$ MCM / $O(m \cdot n)$ LCS |
 
 ---
 
@@ -508,6 +510,192 @@ Minimum cost = 7
 
 ---
 
+## Experiment 8: Dynamic Programming (MCM & LCS)
+
+**Source File:** [`exp8.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp8.py)
+
+The script provides an interactive CLI runner (`main()`) to execute either experiment individually or both sequentially:
+1. `8(a)` — Matrix Chain Multiplication (MCM)
+2. `8(b)` — Longest Common Subsequence (LCS)
+3. Run Both Experiments (Interactive)
+
+---
+
+### Dynamic Programming (DP) Foundations
+
+Dynamic Programming solves optimization problems by breaking them down into simpler subproblems, solving each subproblem once, and storing the results in a lookup table (memoization or tabulation) to avoid redundant computations. A problem must exhibit two core properties to be solvable by DP:
+1. **Optimal Substructure**: An optimal solution to the problem contains optimal solutions to its subproblems.
+2. **Overlapping Subproblems**: The recursive space contains repeated visits to the same subproblems rather than generating new subproblems at each step.
+
+---
+
+### 8(a) Matrix Chain Multiplication (MCM)
+
+#### Overview
+Given a sequence (chain) of $n$ matrices $\langle A_1, A_2, \dots, A_n \rangle$ where matrix $A_i$ has dimension $p_{i-1} \times p_i$, we wish to compute the product $A_1 A_2 \cdots A_n$ with the **minimum number of scalar multiplications**.
+
+Because matrix multiplication is associative ($(AB)C = A(BC)$), the parenthesization does not change the resulting product matrix, but it drastically impacts the computational cost:
+- Multiplying $A (10 \times 100)$ and $B (100 \times 5)$ takes $10 \times 100 \times 5 = 5,000$ operations, producing a $(10 \times 5)$ matrix.
+- Multiplying with $C (5 \times 50)$:
+  - $(AB)C$ costs $5,000 + (10 \times 5 \times 50) = 5,000 + 2,500 = 7,500$ operations.
+  - $A(BC)$ costs $(100 \times 5 \times 50) + (10 \times 100 \times 50) = 25,000 + 50,000 = 75,000$ operations (10x more expensive!).
+
+#### Mathematical Recurrence
+Let $dp[i][j]$ denote the minimum number of scalar multiplications needed to compute the matrix product $A_{i} \dots A_{j}$ (0-indexed from $0$ to $n-1$):
+
+$$dp[i][j] = \begin{cases} 0 & \text{if } i = j \\ \min_{i \le k < j} \left\{ dp[i][k] + dp[k+1][j] + p[i] \cdot p[k+1] \cdot p[j+1] \right\} & \text{if } i < j \end{cases}$$
+
+#### Algorithmic Workflow & Mechanics
+
+1. **Input Dimensions**:
+   - Reads the matrix count $n$.
+   - Reads the $n+1$ dimensions into an array $p = [p_0, p_1, \dots, p_n]$.
+2. **DP Table Initialization**:
+   - Creates an $n \times n$ table initialized with $0$s ($dp[i][i] = 0$ for all $i$, since single matrices require 0 multiplications).
+3. **Bottom-Up Tabulation by Chain Length**:
+   - Outer loop `length` ranges from $2$ to $n$ (solving small matrix subchains first).
+   - Inner loop `i` selects start index from $0$ to $n - \text{length}$.
+   - End index `j = i + length - 1`.
+   - Sets $dp[i][j] = \infty$.
+   - Split loop `k` ranges from $i$ to $j-1$:
+     - Computes scalar multiplication cost:
+       $$\text{cost} = dp[i][k] + dp[k+1][j] + p[i] \cdot p[k+1] \cdot p[j+1]$$
+     - Updates $dp[i][j] = \min(dp[i][j], \text{cost})$.
+4. **Result Extraction**:
+   - $dp[0][n-1]$ holds the globally optimal cost for the full chain $A_0 \dots A_{n-1}$.
+
+#### Step-by-Step Execution Trace
+
+```text
+Input:
+n = 3 matrices
+Dimensions (n + 1 = 4): p = [10, 20, 30, 40]
+Matrix A0: 10 x 20
+Matrix A1: 20 x 30
+Matrix A2: 30 x 40
+
+Chain Length = 1:
+dp[0][0] = 0, dp[1][1] = 0, dp[2][2] = 0
+
+Chain Length = 2:
+• Subchain (A0 * A1) [i=0, j=1, k=0]:
+  cost = dp[0][0] + dp[1][1] + p[0]*p[1]*p[2] = 0 + 0 + 10*20*30 = 6,000
+  dp[0][1] = 6,000
+
+• Subchain (A1 * A2) [i=1, j=2, k=1]:
+  cost = dp[1][1] + dp[2][2] + p[1]*p[2]*p[3] = 0 + 0 + 20*30*40 = 24,000
+  dp[1][2] = 24,000
+
+Chain Length = 3:
+• Subchain (A0 * A1 * A2) [i=0, j=2]:
+  - Split k = 0 -> (A0)(A1 * A2):
+    cost = dp[0][0] + dp[1][2] + p[0]*p[1]*p[3] = 0 + 24,000 + 10*20*40 = 24,000 + 8,000 = 32,000
+  - Split k = 1 -> (A0 * A1)(A2):
+    cost = dp[0][1] + dp[2][2] + p[0]*p[2]*p[3] = 6,000 + 0 + 10*30*40 = 6,000 + 12,000 = 18,000
+  - Minimum cost: min(32,000, 18,000) = 18,000
+  dp[0][2] = 18,000
+
+Output:
+Minimum number of multiplications = 18000
+```
+
+#### Complexity Analysis
+
+- **Time Complexity**:
+  - The algorithm employs three nested loops:
+    1. Chain length $L$ runs from $2$ to $n$ ($O(n)$)
+    2. Starting index $i$ runs from $0$ to $n-L$ ($O(n)$)
+    3. Split point $k$ runs from $i$ to $j-1$ ($O(n)$)
+  - Total combinations $\approx \sum_{L=2}^n (n - L + 1)(L - 1) = \frac{n^3 - n}{6} \implies O(n^3)$.
+- **Space Complexity**:
+  - **Auxiliary Space**: $O(n^2)$ to store the $n \times n$ dynamic programming matrix `dp`.
+
+---
+
+### 8(b) Longest Common Subsequence (LCS)
+
+#### Overview
+A **subsequence** of a string is a sequence derived by deleting zero or more characters without changing the relative order of the remaining characters. Given two sequences $X = \langle x_1, x_2, \dots, x_m \rangle$ and $Y = \langle y_1, y_2, \dots, y_n \rangle$, the **Longest Common Subsequence (LCS)** problem finds a common subsequence of maximum possible length.
+
+*Difference between Substring and Subsequence:*
+- A **substring** must be contiguous (e.g., `"BC"` is a substring of `"ABCD"`).
+- A **subsequence** does not need to be contiguous (e.g., `"ACD"` is a subsequence of `"ABCD"`).
+
+#### Mathematical Recurrence
+Let $dp[i][j]$ be the length of an LCS of prefixes $X[0 \dots i-1]$ and $Y[0 \dots j-1]$:
+
+$$dp[i][j] = \begin{cases} 0 & \text{if } i = 0 \text{ or } j = 0 \\ dp[i-1][j-1] + 1 & \text{if } X[i-1] = Y[j-1] \\ \max(dp[i-1][j], dp[i][j-1]) & \text{if } X[i-1] \ne Y[j-1] \end{cases}$$
+
+#### Algorithmic Workflow & Mechanics
+
+1. **Table Construction**:
+   - Allocates a 2D table `dp` of size $(m + 1) \times (n + 1)$ with all values initialized to $0$.
+   - Row $0$ and column $0$ remain $0$ representing base cases with empty prefixes.
+2. **Bottom-Up Filling**:
+   - Traverses $i$ from $1$ to $m$ and $j$ from $1$ to $n$:
+     - If characters match (`str1[i-1] == str2[j-1]`), extends the LCS: $dp[i][j] = dp[i-1][j-1] + 1$.
+     - If characters mismatch, inherits the best result: $dp[i][j] = \max(dp[i-1][j], dp[i][j-1])$.
+   - $dp[m][n]$ gives the maximum length.
+3. **Backtracking to Reconstruct the LCS**:
+   - Starts from $i = m, j = n$:
+     - If $str1[i-1] == str2[j-1]$: character belongs to LCS. Append to result and move diagonally ($i \leftarrow i-1, j \leftarrow j-1$).
+     - Else if $dp[i-1][j] > dp[i][j-1]$: optimal solution came from top prefix; move up ($i \leftarrow i-1$).
+     - Else: move left ($j \leftarrow j-1$).
+   - Reverse the collected string (`lcs[::-1]`) since backtracking constructs it backwards.
+
+#### Step-by-Step Execution Trace
+
+```text
+Input:
+str1 = "ABCD" (m = 4)
+str2 = "ACDF" (n = 4)
+
+DP Table:
+      Ø   A   C   D   F
+  Ø [ 0,  0,  0,  0,  0 ]
+  A [ 0,  1,  1,  1,  1 ]
+  B [ 0,  1,  1,  1,  1 ]
+  C [ 0,  1,  2,  2,  2 ]
+  D [ 0,  1,  2,  3,  3 ]
+
+Backtracking:
+- At (4, 4) ['D' vs 'F']: Mismatch -> dp[3][4] (2) <= dp[4][3] (3) -> Move left to (4, 3)
+- At (4, 3) ['D' == 'D']: Match! Add 'D', Move diagonally to (3, 2)
+- At (3, 2) ['C' == 'C']: Match! Add 'C', Move diagonally to (2, 1)
+- At (2, 1) ['B' vs 'A']: Mismatch -> dp[1][1] (1) >= dp[2][0] (0) -> Move up to (1, 1)
+- At (1, 1) ['A' == 'A']: Match! Add 'A', Move diagonally to (0, 0)
+- End of trace!
+
+Collected backwards: "DCA"
+Reversed LCS: "ACD"
+Length: 3
+
+Output:
+Longest Common Subsequence = ACD
+Length of LCS = 3
+```
+
+#### Complexity Analysis
+
+- **Time Complexity**:
+  - **Table Filling**: Traversing an $(m + 1) \times (n + 1)$ grid takes $O(m \cdot n)$ time.
+  - **Backtracking**: Each step decrements $i$, $j$, or both, taking at most $O(m + n)$ steps.
+  - **Overall Time Complexity**: $O(m \cdot n)$.
+- **Space Complexity**:
+  - **Auxiliary Space**: $O(m \cdot n)$ to store the 2D DP matrix.
+
+---
+
+### Algorithm Design Paradigm Comparison
+
+| Paradigm | Strategy | Key Distinguishing Trait | Example Problems |
+|---|---|---|---|
+| **Divide & Conquer** | Splits into independent subproblems, solves recursively, combines solutions | Subproblems do not overlap | Merge Sort, Quick Sort, Binary Search |
+| **Greedy Approach** | Makes the locally optimal choice at each step hoping for global optimum | Never reconsiders past decisions | Fractional Knapsack, Prim's, Kruskal's |
+| **Dynamic Programming** | Solves overlapping subproblems systematically and memoizes/tabulates | Explores all split options via optimal substructure | Matrix Chain Multiplication, LCS, 0/1 Knapsack |
+
+---
+
 ## Comprehensive Time & Space Complexity Matrix
 
 | Structure / Algorithm | Search / Find Min | Insert (Worst Case) | Insert (Amortized) | Extract Min / Delete | Overall Time Complexity | Space Complexity |
@@ -523,6 +711,8 @@ Minimum cost = 7
 | **Bellman-Ford (SSSP 6b Demo)** | N/A | N/A | N/A | N/A | $O(1)$ demo / $O(V \cdot E)$ gen | $O(1)$ demo / $O(V)$ gen |
 | **Prim's Algorithm (MST 7a)** | N/A | N/A | N/A | N/A | $O(V \cdot E)$ lab / $O(E \log V)$ heap | $O(V + E)$ |
 | **Kruskal's Algorithm (MST 7b)** | N/A | N/A | N/A | N/A | $O(E \log E) = O(E \log V)$ | $O(V + E)$ |
+| **Matrix Chain Mult. (DP 8a)** | N/A | N/A | N/A | N/A | $O(n^3)$ | $O(n^2)$ |
+| **Longest Common Subseq. (DP 8b)** | N/A | N/A | N/A | N/A | $O(m \cdot n)$ | $O(m \cdot n)$ |
 
 ---
 
@@ -576,6 +766,22 @@ If all edge weights in the graph are distinct, the Minimum Spanning Tree is **st
 ### Q15: How does Kruskal's algorithm detect cycles, and what is the role of Union-Find?
 Kruskal's algorithm maintains a Disjoint Set Union (DSU) structure where each connected component is a disjoint set represented by a root. For an edge $(u, v)$, it queries `find(u)` and `find(v)`. If `find(u) == find(v)`, both vertices already belong to the same component, so adding the edge would close a cycle. If they differ, the edge is safe to add, and `union(u, v)` merges the two components.
 
+### Q16: Why can't Matrix Chain Multiplication be solved using a simple Greedy choice?
+A greedy choice (such as always multiplying the pair with the smallest intermediate dimension or lowest immediate product) can lead to suboptimal parenthesization because it ignores the compounding multiplication dimensions propagated to subsequent operations in the chain. Only Dynamic Programming systematically searches all valid split points $k$.
+
+### Q17: What are the two essential properties a problem must possess for Dynamic Programming to be applicable?
+1. **Optimal Substructure**: An optimal solution to the overall problem incorporates optimal solutions to its subproblems.
+2. **Overlapping Subproblems**: The recursive decomposition repeatedly evaluates the exact same subproblems, making caching/tabulation effective.
+
+### Q18: What is the crucial difference between a Substring and a Subsequence?
+A **substring** consists of contiguous characters extracted directly from a string (e.g., `"BC"` from `"ABCD"`). A **subsequence** retains the original relative order of elements but does not require contiguity (e.g., `"ACD"` from `"ABCD"`).
+
+### Q19: How can the space complexity of the LCS length computation be optimized from $O(m \cdot n)$ to $O(\min(m, n))$?
+Because computing row $i$ in the DP table depends solely on the current row $i$ and the immediately preceding row $i-1$, we only need to store two rows (or even a single row with a few tracking variables). This reduces the auxiliary space to $O(\min(m, n))$ if only the LCS length is required.
+
+### Q20: Why do chain lengths in the Matrix Chain Multiplication algorithm iterate from 2 up to $n$ rather than row-by-row?
+Evaluating subproblem $dp[i][j]$ requires access to values $dp[i][k]$ and $dp[k+1][j]$, both of which represent subchains of strictly smaller lengths ($k - i + 1 < j - i + 1$). By computing costs in increasing order of chain length $L = 2, 3, \dots, n$, all necessary subproblem solutions are guaranteed to be populated in the DP table prior to being referenced.
+
 ---
 
-*Prepared for DAA Laboratory — Unit Experiments 1–7*
+*Prepared for DAA Laboratory — Unit Experiments 1–8*
