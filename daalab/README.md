@@ -13,6 +13,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 - [Experiment 4: Red-Black Tree Implementation](#experiment-4-red-black-tree-implementation)
 - [Experiment 5: Greedy Algorithms](#experiment-5-greedy-algorithms)
 - [Experiment 6: Task Scheduling & Bellman-Ford Algorithm](#experiment-6-task-scheduling--bellman-ford-algorithm)
+- [Experiment 7: Minimum Spanning Tree (MST) Algorithms](#experiment-7-minimum-spanning-tree-mst-algorithms)
 - [Comprehensive Time & Space Complexity Matrix](#comprehensive-time--space-complexity-matrix)
 - [Viva Questions & Answers](#viva-questions--answers)
 
@@ -28,6 +29,7 @@ Comprehensive Python implementations, algorithmic explanations, step-by-step ope
 | [`exp4.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp4.py) | **Red-Black Tree** | `insert`, `fix_insert`, `left_rotate`, `right_rotate`, `search`, `inorder` | $O(\log n)$ search / insert |
 | [`exp5.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp5.py) | **Greedy Algorithms** | Fractional Knapsack, Activity Selection, Huffman Coding | $O(n \log n)$ sorting / heap building |
 | [`exp6.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp6.py) | **Task Scheduling & Bellman-Ford** | 6(a) Greedy task scheduling (`task_scheduling`), 6(b) Shortest path relaxation & comparison (`run_bellman_ford`) | $O(n \log n)$ scheduling / $O(1)$ path relaxation demo |
+| [`exp7.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp7.py) | **Minimum Spanning Tree (MST)** | 7(a) Prim's Algorithm (`prims_algorithm`), 7(b) Kruskal's Algorithm (`kruskals_algorithm`) | $O(V \cdot E)$ lab / $O(E \log E)$ |
 
 ---
 
@@ -306,6 +308,206 @@ Shortest Distance: 6
 
 ---
 
+## Experiment 7: Minimum Spanning Tree (MST) Algorithms
+
+**Source File:** [`exp7.py`](file:///Users/imadmac/school/code/Uni_Labs/daalab/exp7.py)
+
+The script provides an interactive CLI runner (`main()`) to execute either experiment individually or both sequentially:
+1. `7(a)` — Prim's Algorithm (Minimum Spanning Tree)
+2. `7(b)` — Kruskal's Algorithm (Minimum Spanning Tree)
+3. Run Both Experiments (Interactive)
+
+---
+
+### Minimum Spanning Tree (MST) Fundamentals
+
+Given a connected, undirected, weighted graph $G = (V, E)$, a **Spanning Tree** is an acyclic subgraph connecting all $|V|$ vertices with exactly $|V| - 1$ edges. A **Minimum Spanning Tree (MST)** is a spanning tree whose cumulative edge weight is minimized:
+
+$$w(T) = \sum_{(u, v) \in T} w(u, v) \quad \text{is minimal}$$
+
+Both Prim's and Kruskal's algorithms are **Greedy Algorithms** governed by the **Cut Property**:
+> **Cut Property:** For any cut $(S, V \setminus S)$ of a connected graph $G$, the minimum weight edge crossing the cut belongs to an MST.
+
+---
+
+### 7(a) Prim's Algorithm
+
+#### Overview
+**Prim's Algorithm** grows a single Minimum Spanning Tree outward starting from an arbitrary initial vertex $v_0$. At each step, it identifies all candidate cross-edges connecting the currently spanned vertices ($S$) to the remaining unvisited vertices ($V \setminus S$) and greedily selects the minimum weight edge, adding the newly discovered vertex into $S$.
+
+#### Algorithmic Workflow & Mechanics
+
+1. **Graph Input Gathering**:
+   - Reads the total number of vertices $n$ and their string labels (e.g., `A B C D`).
+   - Reads the total count of edges $e$.
+   - Prompts for each undirected edge in `u-v` format and its integer weight $w$.
+   - Stores each edge as a tuple `(u, v, weight)`.
+2. **Initialization**:
+   - Spanning set `selected = [vertices[0]]` starts with the first vertex.
+   - Initializes empty MST edge list `mst = []` and `total = 0`.
+3. **Iterative Cut Relaxation (`prims_algorithm`)**:
+   - Loops while `len(selected) < n`:
+     - Initializes `minimum = 999999` and `best = None`.
+     - Scans all edges $(u, v, w)$:
+       - If $u \in \text{selected}$ and $v \notin \text{selected}$ with $w < \text{minimum}$, records candidate edge $(u, v, w)$.
+       - If $v \in \text{selected}$ and $u \notin \text{selected}$ with $w < \text{minimum}$, records candidate edge $(v, u, w)$.
+     - If no connecting edge is found, reports that the graph is disconnected and halts.
+     - Adds the newly reached vertex $v$ to `selected`.
+     - Appends the chosen edge to `mst` and adds its weight to `total`.
+4. **Display Output**:
+   - Prints all edges selected in the MST and the total minimum cost.
+
+#### Step-by-Step Execution Trace
+
+```text
+Vertices: A, B, C, D (n = 4)
+Edges:
+A-B = 5
+A-C = 4
+B-C = 10
+B-D = 6
+C-D = 8
+
+Start Vertex: A (selected = [A])
+
+Iteration 1:
+- Candidate cross-edges from {A} to {B, C, D}:
+  • A-B (weight 5)
+  • A-C (weight 4)  <-- Minimum
+- Select edge: A - C = 4
+- selected = [A, C], MST = [A-C (4)], total = 4
+
+Iteration 2:
+- Candidate cross-edges from {A, C} to {B, D}:
+  • A-B (weight 5)  <-- Minimum
+  • C-D (weight 8)
+- Select edge: A - B = 5
+- selected = [A, C, B], MST = [A-C (4), A-B (5)], total = 9
+
+Iteration 3:
+- Candidate cross-edges from {A, C, B} to {D}:
+  • B-D (weight 6)  <-- Minimum
+  • C-D (weight 8)
+- Select edge: B - D = 6
+- selected = [A, C, B, D], MST = [A-C (4), A-B (5), B-D (6)], total = 15
+
+Output:
+Minimum Spanning Tree:
+A - C = 4
+A - B = 5
+B - D = 6
+Minimum cost = 15
+```
+
+#### Complexity Analysis
+
+- **Time Complexity**:
+  - **Lab Implementation**: At each of the $V - 1$ iterations, the algorithm iterates over all $E$ edges to find the minimum cross-edge. Total time is $O(V \cdot E)$.
+  - **Standard Priority Queue (Min-Heap)**: $O(E \log V)$ with adjacency list and binary heap.
+  - **Fibonacci Heap**: $O(E + V \log V)$ optimal for dense graphs.
+- **Space Complexity**:
+  - **Auxiliary Space**: $O(V + E)$ to store vertex labels, edge tuples, and the MST list.
+
+---
+
+### 7(b) Kruskal's Algorithm
+
+#### Overview
+**Kruskal's Algorithm** is an edge-based greedy algorithm that builds an MST by sorting all edges in the entire graph in non-decreasing order of weight. It iterates through the sorted edge list, greedily adding an edge if and only if it does not form a cycle with previously selected edges. Cycle detection is accomplished via the **Disjoint Set Union (DSU / Union-Find)** data structure.
+
+#### Algorithmic Workflow & Mechanics
+
+1. **Edge Sorting**:
+   - Sorts all graph edges in ascending order of their weights:
+     ```python
+     edges_sorted = sorted(edges, key=lambda x: x[2])
+     ```
+2. **Disjoint Set Initialization**:
+   - Each vertex starts in its own individual component / set:
+     ```python
+     parent = {v: v for v in vertices}
+     ```
+3. **Cycle Detection & Set Union (`find`)**:
+   - For each edge $(u, v, w)$ in ascending order:
+     - Finds the representative root of vertex $u$: `parent_u = find(u)`
+     - Finds the representative root of vertex $v$: `parent_v = find(v)`
+     - **Safe Edge Condition (`parent_u != parent_v`)**: Vertices belong to different connected components. Adding this edge will **not** create a cycle.
+       - Edge is appended to `mst`.
+       - Edge weight is added to `total`.
+       - Sets are merged (union): `parent[parent_u] = parent_v`.
+     - **Cycle Detected (`parent_u == parent_v`)**: Both vertices are already connected in the same component. The edge is discarded.
+4. **Termination**:
+   - Halts immediately when `len(mst) == n - 1` (since any spanning tree on $n$ vertices contains exactly $n-1$ edges).
+
+#### Step-by-Step Execution Trace
+
+```text
+Vertices: A, B, C, D (n = 4)
+Input Edges: C-D (1), A-D (2), B-D (4), A-B (5), B-C (6)
+
+Sorted Edge List:
+1. (C, D, 1)
+2. (A, D, 2)
+3. (B, D, 4)
+4. (A, B, 5)
+5. (B, C, 6)
+
+Initial Parents: {A: A, B: B, C: C, D: D}
+
+Step 1: Edge (C, D, weight 1)
+- find(C) = C, find(D) = D (C != D) -> NO CYCLE
+- Add C - D = 1 to MST
+- Union: parent[C] = D
+- Sets: {A}, {B}, {C, D}
+- MST count: 1, Total: 1
+
+Step 2: Edge (A, D, weight 2)
+- find(A) = A, find(D) = D (A != D) -> NO CYCLE
+- Add A - D = 2 to MST
+- Union: parent[A] = D
+- Sets: {B}, {A, C, D}
+- MST count: 2, Total: 3
+
+Step 3: Edge (B, D, weight 4)
+- find(B) = B, find(D) = D (B != D) -> NO CYCLE
+- Add B - D = 4 to MST
+- Union: parent[B] = D
+- Sets: {A, B, C, D}
+- MST count: 3 (equals n - 1 = 3) -> BREAK!
+- Edges (A-B, 5) and (B-C, 6) are skipped.
+
+Output:
+Minimum Spanning Tree:
+C - D = 1
+A - D = 2
+B - D = 4
+Minimum cost = 7
+```
+
+#### Complexity Analysis
+
+- **Time Complexity**:
+  - **Edge Sorting**: $O(E \log E) = O(E \log V)$ (since $E \le V^2$, $\log E \le 2 \log V$).
+  - **Union-Find Operations**: With $E$ edge queries, simple path traversal takes $O(E \cdot V)$ worst-case; with path compression and rank heuristics, it runs in nearly linear $O(E \cdot \alpha(V))$.
+  - **Overall Time Complexity**: $O(E \log E) = O(E \log V)$, dominated by the sorting stage.
+- **Space Complexity**:
+  - **Auxiliary Space**: $O(V)$ for the parent dictionary + $O(E)$ for edge storage = $O(V + E)$.
+
+---
+
+### Prim's vs. Kruskal's Comparative Analysis
+
+| Feature | Prim's Algorithm | Kruskal's Algorithm |
+|---|---|---|
+| **Strategy** | Grows a single tree vertex-by-vertex from a start node | Grows a forest by adding edges in global sorted order |
+| **Primary Data Structure** | Min-Heap / Priority Queue or candidate list | Disjoint Set Union (DSU / Union-Find) & Edge List |
+| **Cycle Prevention** | Never adds a vertex already in the selected set | Checks if edge endpoints belong to the same component (`find`) |
+| **Graph Suitability** | **Dense Graphs** ($E \approx V^2$): $O(V^2)$ or $O(E + V \log V)$ | **Sparse Graphs** ($E \ll V^2$): $O(E \log V)$ |
+| **Disconnected Graphs** | Traverses only the component containing the starting vertex | Computes a **Minimum Spanning Forest (MSF)** across all components |
+| **Edge Sorting Required** | No global sort needed | Yes, requires sorting all $E$ edges upfront |
+
+---
+
 ## Comprehensive Time & Space Complexity Matrix
 
 | Structure / Algorithm | Search / Find Min | Insert (Worst Case) | Insert (Amortized) | Extract Min / Delete | Overall Time Complexity | Space Complexity |
@@ -319,6 +521,8 @@ Shortest Distance: 6
 | **Huffman Coding** | N/A | $O(\log n)$ | $O(\log n)$ | $O(\log n)$ | $O(n \log n)$ | $O(n)$ |
 | **Task Scheduling (Greedy 6a)** | N/A | N/A | N/A | N/A | $O(n \log n)$ | $O(n)$ |
 | **Bellman-Ford (SSSP 6b Demo)** | N/A | N/A | N/A | N/A | $O(1)$ demo / $O(V \cdot E)$ gen | $O(1)$ demo / $O(V)$ gen |
+| **Prim's Algorithm (MST 7a)** | N/A | N/A | N/A | N/A | $O(V \cdot E)$ lab / $O(E \log V)$ heap | $O(V + E)$ |
+| **Kruskal's Algorithm (MST 7b)** | N/A | N/A | N/A | N/A | $O(E \log E) = O(E \log V)$ | $O(V + E)$ |
 
 ---
 
@@ -355,6 +559,23 @@ By mathematical induction ("Greedy Stays Ahead" proof): Let the greedy schedule 
 ### Q10: How does Bellman-Ford handle negative weight edges and detect negative cycles?
 Unlike Dijkstra's algorithm (which fails on negative edges due to greedy finality), Bellman-Ford relaxes all $|E|$ edges $|V|-1$ times. If a further relaxation in the $|V|$-th pass still yields a shorter distance (`dist[u] + weight < dist[v]`), it proves the graph contains a negative-weight cycle reachable from the source.
 
+### Q11: What is the fundamental difference in approach between Prim's and Kruskal's algorithms?
+- **Prim's algorithm** is **vertex-centric** and grows a single tree continuously starting from an arbitrary root, always adding the cheapest edge crossing the cut between visited and unvisited vertices.
+- **Kruskal's algorithm** is **edge-centric** and considers edges in globally sorted order, adding edges that connect different disjoint components (growing a forest until it merges into a single tree).
+
+### Q12: What is the "Cut Property" and why does it guarantee the correctness of greedy MST algorithms?
+The Cut Property states that for any partition of the graph's vertices into two disjoint sets $S$ and $V \setminus S$, the lightest edge crossing the cut must belong to some MST. If we assume an MST $T$ does not include this minimum cross-edge $e$, adding $e$ to $T$ creates a cycle containing another edge $e'$ crossing the same cut. Since $w(e) \le w(e')$, replacing $e'$ with $e$ yields a spanning tree of equal or lesser weight, proving optimality.
+
+### Q13: Why is Kruskal's algorithm generally preferred for sparse graphs while Prim's is preferred for dense graphs?
+- In **sparse graphs** ($E \approx V$), Kruskal's sorting step takes $O(E \log E) \approx O(V \log V)$, which is extremely fast, and disjoint-set operations have virtually constant amortized cost.
+- In **dense graphs** ($E \approx V^2$), Kruskal sorts $O(V^2)$ edges ($O(V^2 \log V)$), whereas Prim's algorithm using an adjacency matrix or Fibonacci heap runs in $O(V^2)$ or $O(E + V \log V)$, avoiding the cost of sorting all $O(V^2)$ edges.
+
+### Q14: What happens if all edge weights in a connected undirected graph are unique?
+If all edge weights in the graph are distinct, the Minimum Spanning Tree is **strictly unique**. Both Prim's and Kruskal's algorithms will discover the exact same tree regardless of tie-breaking or starting vertex.
+
+### Q15: How does Kruskal's algorithm detect cycles, and what is the role of Union-Find?
+Kruskal's algorithm maintains a Disjoint Set Union (DSU) structure where each connected component is a disjoint set represented by a root. For an edge $(u, v)$, it queries `find(u)` and `find(v)`. If `find(u) == find(v)`, both vertices already belong to the same component, so adding the edge would close a cycle. If they differ, the edge is safe to add, and `union(u, v)` merges the two components.
+
 ---
 
-*Prepared for DAA Laboratory — Unit Experiments 1–6*
+*Prepared for DAA Laboratory — Unit Experiments 1–7*
