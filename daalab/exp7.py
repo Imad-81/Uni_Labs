@@ -7,6 +7,8 @@
 # 7(a) - Prim's Algorithm
 # ==========================================================
 def prims_algorithm(vertices, edges):
+    if not vertices:
+        return [], 0
     n = len(vertices)
 
     # Start with the first vertex
@@ -22,7 +24,7 @@ def prims_algorithm(vertices, edges):
     while len(selected) < n:
 
         # Set minimum weight to a large number
-        minimum = 999999
+        minimum = float('inf')
 
         # Set best edge as empty
         best = None
@@ -66,47 +68,75 @@ def prims_algorithm(vertices, edges):
     return mst, total
 
 
+def _read_edge(i):
+    while True:
+        try:
+            raw = input(f"Enter edge {i + 1} (e.g. A-B or A B): ").strip()
+            if not raw:
+                continue
+            # Support formats: "A-B 5", "A B 5", "A-B", "A B"
+            cleaned = raw.replace("-", " ").replace(",", " ")
+            parts = cleaned.split()
+            if len(parts) >= 3:
+                return parts[0], parts[1], int(parts[2])
+            elif len(parts) == 2:
+                w_str = input("Enter weight: ").strip()
+                return parts[0], parts[1], int(w_str)
+            elif len(parts) == 1 and "-" in raw:
+                u, v = raw.replace(" ", "").split("-")
+                w_str = input("Enter weight: ").strip()
+                return u, v, int(w_str)
+            else:
+                print("Format not recognized. Please enter edge like 'A-B' or 'A B'.")
+        except ValueError:
+            print("Invalid weight! Please enter an integer weight.")
+
+
 def run_prims():
-    # Enter number of vertices
-    n = int(input("Enter number of vertices: "))
+    while True:
+        try:
+            n_str = input("Enter number of vertices: ").strip()
+            if not n_str:
+                continue
+            n = int(n_str)
+            if n < 1:
+                print("Number of vertices must be at least 1.")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid integer.")
 
-    # Enter vertex names
     vertices = input("Enter vertex names: ").split()
+    while len(vertices) < n:
+        more = input(f"Please enter remaining {n - len(vertices)} vertex names: ").split()
+        vertices.extend(more)
+    vertices = vertices[:n]
 
-    # Enter number of edges
-    e = int(input("Enter number of edges: "))
+    while True:
+        try:
+            e_str = input("Enter number of edges: ").strip()
+            if not e_str:
+                continue
+            e = int(e_str)
+            if e < 0:
+                print("Number of edges cannot be negative.")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid integer.")
 
-    # Create empty list for edges
     edges = []
-
-    # Enter all edges
     for i in range(e):
-
-        # Enter edge like A-B
-        edge = input("Enter edge: ")
-
-        # Remove spaces
-        edge = edge.replace(" ", "")
-
-        # Enter weight
-        weight = int(input("Enter weight: "))
-
-        # Separate the two vertices
-        u, v = edge.split("-")
-
-        # Store edge and weight
+        u, v, weight = _read_edge(i)
         edges.append((u, v, weight))
 
     mst, total = prims_algorithm(vertices, edges)
 
     # Display the result
     print("\nMinimum Spanning Tree:")
-
-    # Print MST edges
     for u, v, weight in mst:
         print(u, "-", v, "=", weight)
 
-    # Print total cost
     print("Minimum cost =", total)
 
 
@@ -115,6 +145,8 @@ def run_prims():
 # ==========================================================
 def kruskals_algorithm(vertices, edges):
     n = len(vertices)
+    if n == 0:
+        return [], 0
 
     # Sort all edges according to weight
     edges_sorted = sorted(edges, key=lambda x: x[2])
@@ -128,6 +160,8 @@ def kruskals_algorithm(vertices, edges):
 
     # Function to find the parent of a vertex
     def find(vertex):
+        if vertex not in parent:
+            parent[vertex] = vertex
 
         # Continue until the vertex is its own parent
         while parent[vertex] != vertex:
@@ -167,50 +201,98 @@ def kruskals_algorithm(vertices, edges):
         if len(mst) == n - 1:
             break
 
+    if len(mst) < n - 1 and n > 1:
+        print("Graph is not connected")
+
     return mst, total
 
 
 def run_kruskals():
-    # Enter number of vertices
-    n = int(input("Enter number of vertices: "))
+    while True:
+        try:
+            n_str = input("Enter number of vertices: ").strip()
+            if not n_str:
+                continue
+            n = int(n_str)
+            if n < 1:
+                print("Number of vertices must be at least 1.")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid integer.")
 
-    # Enter vertex names
     vertices = input("Enter vertex names: ").split()
+    while len(vertices) < n:
+        more = input(f"Please enter remaining {n - len(vertices)} vertex names: ").split()
+        vertices.extend(more)
+    vertices = vertices[:n]
 
-    # Enter number of edges
-    e = int(input("Enter number of edges: "))
+    while True:
+        try:
+            e_str = input("Enter number of edges: ").strip()
+            if not e_str:
+                continue
+            e = int(e_str)
+            if e < 0:
+                print("Number of edges cannot be negative.")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid integer.")
 
-    # Create an empty list to store edges
     edges = []
-
-    # Enter all edges
     for i in range(e):
-
-        # Enter edge like A-B
-        edge = input("Enter edge: ")
-
-        # Remove spaces
-        edge = edge.replace(" ", "")
-
-        # Enter weight
-        weight = int(input("Enter weight: "))
-
-        # Separate the two vertices
-        u, v = edge.split("-")
-
-        # Store edge and weight
+        u, v, weight = _read_edge(i)
         edges.append((u, v, weight))
 
     mst, total = kruskals_algorithm(vertices, edges)
 
     # Display the MST
     print("\nMinimum Spanning Tree:")
-
-    # Print all MST edges
     for u, v, weight in mst:
         print(u, "-", v, "=", weight)
 
-    # Print total cost
+    print("Minimum cost =", total)
+
+
+# ==========================================================
+# Built-in Demos
+# ==========================================================
+def demo_prims():
+    print("Demo Prim's Algorithm:")
+    vertices = ["A", "B", "C", "D"]
+    edges = [
+        ("A", "B", 5),
+        ("A", "C", 4),
+        ("B", "C", 10),
+        ("B", "D", 6),
+        ("C", "D", 8)
+    ]
+    print("Vertices:", vertices)
+    print("Edges:", edges)
+    mst, total = prims_algorithm(vertices, edges)
+    print("\nMinimum Spanning Tree:")
+    for u, v, weight in mst:
+        print(u, "-", v, "=", weight)
+    print("Minimum cost =", total)
+
+
+def demo_kruskals():
+    print("Demo Kruskal's Algorithm:")
+    vertices = ["A", "B", "C", "D"]
+    edges = [
+        ("C", "D", 1),
+        ("A", "D", 2),
+        ("B", "D", 4),
+        ("A", "B", 5),
+        ("B", "C", 6)
+    ]
+    print("Vertices:", vertices)
+    print("Edges:", edges)
+    mst, total = kruskals_algorithm(vertices, edges)
+    print("\nMinimum Spanning Tree:")
+    for u, v, weight in mst:
+        print(u, "-", v, "=", weight)
     print("Minimum cost =", total)
 
 
@@ -224,19 +306,36 @@ def main():
     print("1. 7(a) - Prim's Algorithm")
     print("2. 7(b) - Kruskal's Algorithm")
     print("3. Run Both Experiments (Interactive)")
+    print("4. Run Example / Demo Data")
     print("==========================================================")
 
-    choice = input("Enter choice (1-3) [default: 3]: ").strip()
+    try:
+        choice = input("Enter choice (1-4) [default: 3]: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        print("\nExiting.")
+        return
+
     if not choice:
         choice = "3"
 
-    if choice in ["1", "3"]:
+    if choice == "1":
         print("\n--- 7(a) Prim's Algorithm ---")
         run_prims()
-
-    if choice in ["2", "3"]:
+    elif choice == "2":
         print("\n--- 7(b) Kruskal's Algorithm ---")
         run_kruskals()
+    elif choice == "3":
+        print("\n--- 7(a) Prim's Algorithm ---")
+        run_prims()
+        print("\n--- 7(b) Kruskal's Algorithm ---")
+        run_kruskals()
+    elif choice == "4":
+        print("\n--- 7(a) Prim's Algorithm (Demo) ---")
+        demo_prims()
+        print("\n--- 7(b) Kruskal's Algorithm (Demo) ---")
+        demo_kruskals()
+    else:
+        print("Invalid choice!")
 
 
 if __name__ == "__main__":

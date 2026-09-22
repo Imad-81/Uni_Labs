@@ -7,6 +7,9 @@
 # 8(a) - Matrix Chain Multiplication
 # ==========================================================
 def matrix_chain_multiplication(p):
+    if len(p) < 2:
+        return 0, []
+
     # Number of matrices
     n = len(p) - 1
 
@@ -41,16 +44,32 @@ def matrix_chain_multiplication(p):
 
 
 def run_matrix_chain_multiplication():
-    # Ask the user to enter the number of matrices
-    n = int(input("Enter number of matrices: "))
+    while True:
+        try:
+            n_str = input("Enter number of matrices: ").strip()
+            if not n_str:
+                continue
+            n = int(n_str)
+            if n < 1:
+                print("Number of matrices must be at least 1.")
+                continue
+            break
+        except ValueError:
+            print("Please enter a valid integer.")
 
-    # Ask the user to enter the dimensions of all matrices
-    # For n matrices, we need n+1 dimensions
-    print("Enter", n + 1, "dimensions:")
+    print(f"Enter {n + 1} dimensions (space or comma-separated):")
+    p = []
+    while len(p) < n + 1:
+        line = input().strip()
+        if not line:
+            continue
+        try:
+            parts = line.replace(",", " ").split()
+            p.extend([int(x) for x in parts])
+        except ValueError:
+            print("Invalid dimension! Please enter integers only.")
 
-    # Read the dimensions from the user
-    p = list(map(int, input().split()))
-
+    p = p[:n + 1]
     min_cost, _ = matrix_chain_multiplication(p)
 
     # Display the minimum multiplication cost
@@ -130,17 +149,41 @@ def longest_common_subsequence(str1, str2):
 
 def run_longest_common_subsequence():
     # Ask the user to enter the first string
-    str1 = input("Enter first string: ")
+    str1 = input("Enter first string: ").strip()
 
     # Ask the user to enter the second string
-    str2 = input("Enter second string: ")
+    str2 = input("Enter second string: ").strip()
 
     lcs, length = longest_common_subsequence(str1, str2)
 
     # Display the LCS
-    print("Longest Common Subsequence =", lcs)
+    print("Longest Common Subsequence =", lcs if lcs else "(none)")
 
     # Display the length of the LCS
+    print("Length of LCS =", length)
+
+
+# ==========================================================
+# Built-in Demos
+# ==========================================================
+def demo_matrix_chain_multiplication():
+    print("Demo Matrix Chain Multiplication:")
+    p = [10, 20, 30, 40]
+    n = len(p) - 1
+    print(f"Number of matrices: {n}")
+    print(f"Matrix dimensions: {p} (representing {n} matrices)")
+    min_cost, _ = matrix_chain_multiplication(p)
+    print("Minimum number of multiplications =", min_cost)
+
+
+def demo_longest_common_subsequence():
+    print("Demo Longest Common Subsequence:")
+    str1 = "AGGTAB"
+    str2 = "GXTXAYB"
+    print(f"First string:  '{str1}'")
+    print(f"Second string: '{str2}'")
+    lcs, length = longest_common_subsequence(str1, str2)
+    print("Longest Common Subsequence =", lcs)
     print("Length of LCS =", length)
 
 
@@ -154,19 +197,36 @@ def main():
     print("1. 8(a) - Matrix Chain Multiplication (MCM)")
     print("2. 8(b) - Longest Common Subsequence (LCS)")
     print("3. Run Both Experiments (Interactive)")
+    print("4. Run Example / Demo Data")
     print("==========================================================")
 
-    choice = input("Enter choice (1-3) [default: 3]: ").strip()
+    try:
+        choice = input("Enter choice (1-4) [default: 3]: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        print("\nExiting.")
+        return
+
     if not choice:
         choice = "3"
 
-    if choice in ["1", "3"]:
+    if choice == "1":
         print("\n--- 8(a) Matrix Chain Multiplication ---")
         run_matrix_chain_multiplication()
-
-    if choice in ["2", "3"]:
+    elif choice == "2":
         print("\n--- 8(b) Longest Common Subsequence ---")
         run_longest_common_subsequence()
+    elif choice == "3":
+        print("\n--- 8(a) Matrix Chain Multiplication ---")
+        run_matrix_chain_multiplication()
+        print("\n--- 8(b) Longest Common Subsequence ---")
+        run_longest_common_subsequence()
+    elif choice == "4":
+        print("\n--- 8(a) Matrix Chain Multiplication (Demo) ---")
+        demo_matrix_chain_multiplication()
+        print("\n--- 8(b) Longest Common Subsequence (Demo) ---")
+        demo_longest_common_subsequence()
+    else:
+        print("Invalid choice!")
 
 
 if __name__ == "__main__":
